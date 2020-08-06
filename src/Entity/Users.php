@@ -14,7 +14,7 @@ use App\Entity\Traits\Timestampable;
 class Users implements UserInterface
 {
     use Timestampable;
-    
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
