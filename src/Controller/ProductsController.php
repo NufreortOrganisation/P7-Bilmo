@@ -21,6 +21,8 @@ class ProductsController extends AbstractController
      */
     public function index(ProductsRepository $productsRepository): Response
     {
+        dd($products = $productsRepository->findAll());
+
         return $this->render('products/index.html.twig', [
             'products' => $productsRepository->findAll(),
         ]);

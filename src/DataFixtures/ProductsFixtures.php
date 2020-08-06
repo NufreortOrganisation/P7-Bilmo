@@ -16,7 +16,7 @@ class ProductsFixtures extends Fixture
         for($p = 0; $p < 20; $p++) {
             $product = new Products();
 
-            $product->setName($fake->name)
+            $product->setName($fake->lastName)
                 ->setPrice($fake->randomFloat($nbMaxDecimals = 2, $min = 0, $max = 2000))
                 ->setCategory($fake->colorName)
                 ->setPicture($fake->imageUrl($width = 640, $height = 480));
