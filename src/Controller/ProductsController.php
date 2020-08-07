@@ -4,94 +4,115 @@ namespace App\Controller;
 
 use App\Entity\Products;
 use App\Form\ProductsType;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ProductsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use FOS\RestBundle\Controller\Annotations\Get;
-
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 /**
+ * @package App\Controller
  * @Route("/products")
  */
 class ProductsController extends AbstractController
 {
     /**
-     * @Route("/", name="products_index", methods={"GET"})
+     * @Route("/", name="api_products_collection_get", methods={"GET"})
+     * @param productsRepository $productsRepository
+     * @return JsonResponse
      */
-    public function index(ProductsRepository $productsRepository): Response
+    public function productsCollection(ProductsRepository $productsRepository, SerializerInterface $serializer): JsonResponse
     {
-        dd($products = $productsRepository->findAll());
-
-        return $this->render('products/index.html.twig', [
-            'products' => $productsRepository->findAll(),
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($productsRepository->findAll(), "json"),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+          );
     }
 
     /**
-     * @Route("/new", name="products_new", methods={"GET","POST"})
+     * @Route("/{id}", name="api_product_get", methods={"GET"})
+     * @param Products $product
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
      */
-    public function new(Request $request): Response
+    public function showProduct(Products $product, SerializerInterface $serializer): JsonResponse
     {
-        $product = new Products();
-        $form = $this->createForm(ProductsType::class, $product);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($product);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('products_index');
-        }
-
-        return $this->render('products/new.html.twig', [
-            'product' => $product,
-            'form' => $form->createView(),
-        ]);
+        return new JsonResponse(
+          $serializer->serialize($product, "json"),
+          JsonResponse::HTTP_OK,
+          [],
+          true
+        );
     }
 
     /**
-     * @Route("/{id}", name="products_show", methods={"GET"})
+     * @Route("/new", name="api_products_collection_post", methods={"POST"})
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param UrlGeneratorInterface $urlGenerator
+     * @return JsonResponse
      */
-    public function show(Products $product): Response
+    public function newProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
-        return $this->render('products/show.html.twig', [
-            'product' => $product,
-        ]);
+        $product = $serializer->deserialize($request->getContent(), Products::class, 'json');
+
+        $entityManager->persist($product);
+        $entityManager->flush();
+
+        return new JsonResponse(
+          $serializer->serialize($product, "json"),
+          JsonResponse::HTTP_CREATED,
+          ["Location" => $urlGenerator->generate("api_product_get", ["id" => $product->getId()])],
+          true
+        );
+    }
+
+/**
+     * @Route("/{id}", name="api_product_item_put", methods={"PUT"})
+     * @param Products $product
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param SerializerInterface $serializer
+     */
+    public function editProduct(
+        Products $product,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SerializerInterface $serializer
+    ): JsonResponse {
+        $serializer->deserialize(
+          $request->getContent(),
+              Products::class,
+              'json',
+              [AbstractNormalizer::OBJECT_TO_POPULATE => $product]
+          );
+
+        $entityManager->flush();
+
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**
-     * @Route("/{id}/edit", name="products_edit", methods={"GET","POST"})
+     * @Route("/{id}", name="api_product_item_delete", methods={"DELETE"})
+     * @param Products $product
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
      */
-    public function edit(Request $request, Products $product): Response
-    {
-        $form = $this->createForm(ProductsType::class, $product);
-        $form->handleRequest($request);
+    public function deleteProduct(
+        Products $product,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $entityManager->remove($product);
+        $entityManager->flush();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('products_index');
-        }
-
-        return $this->render('products/edit.html.twig', [
-            'product' => $product,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * @Route("/{id}", name="products_delete", methods={"DELETE"})
-     */
-    public function delete(Request $request, Products $product): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($product);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('products_index');
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 }
