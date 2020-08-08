@@ -20,6 +20,7 @@ use Pagerfanta\Pagerfanta;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Shopping\ApiTKUrlBundle\Annotation as ApiTK;
 use Nelmio\ApiDocBundle\Annotation as Doc;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * @package App\Controller
@@ -32,10 +33,6 @@ class ProductsController extends AbstractController
      * @param productsRepository $productsRepository
      * @return JsonResponse
      *
-     * @Doc\ApiDoc(
-     *     resource=true,
-     *     description="Obtenir la liste de tous les produits."
-     * )
      */
     public function productsCollection(ProductsRepository $productsRepository,
     SerializerInterface $serializer): JsonResponse
