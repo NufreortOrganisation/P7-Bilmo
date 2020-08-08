@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @package App\Controller

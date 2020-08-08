@@ -16,6 +16,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Pagerfanta\Pagerfanta;
+use FOS\RestBundle\Request\ParamFetcherInterface;
+
 /**
  * @package App\Controller
  * @Route("/products")
@@ -27,14 +30,25 @@ class ProductsController extends AbstractController
      * @param productsRepository $productsRepository
      * @return JsonResponse
      */
-    public function productsCollection(ProductsRepository $productsRepository, SerializerInterface $serializer): JsonResponse
+    public function productsCollection(ProductsRepository $productsRepository,
+    SerializerInterface $serializer,
+    ParamFetcherInterface $paramFetcher): JsonResponse
     {
-        return new JsonResponse(
+        $pager = $productsRepository->findAll()->search(
+            $paramFetcher->get('keyword'),
+            $paramFetcher->get('order'),
+            $paramFetcher->get('limit'),
+            $paramFetcher->get('offset')
+        );
+
+        return $pager->getCurrentPageResults();
+
+      /*  return new JsonResponse(
             $serializer->serialize($productsRepository->findAll(), "json"),
             JsonResponse::HTTP_OK,
             [],
             true
-          );
+          ); */
     }
 
     /**
@@ -62,6 +76,8 @@ class ProductsController extends AbstractController
      */
     public function newProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
+      //  $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $product = $serializer->deserialize($request->getContent(), Products::class, 'json');
 
         $entityManager->persist($product);
@@ -88,6 +104,8 @@ class ProductsController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer
     ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $serializer->deserialize(
           $request->getContent(),
               Products::class,
@@ -110,6 +128,8 @@ class ProductsController extends AbstractController
         Products $product,
         EntityManagerInterface $entityManager
     ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $entityManager->remove($product);
         $entityManager->flush();
 

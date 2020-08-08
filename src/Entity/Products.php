@@ -5,15 +5,26 @@ namespace App\Entity;
 use App\Repository\ProductsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Traits\Timestampable;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=ProductsRepository::class)
  * @ORM\HasLifecycleCallbacks()
+ *
+ * @ORM\Entity(repositoryClass="App\Repository\ProductsRepository")
+ *
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_product_get",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      )
+ * )
  */
 class Products
 {
     use Timestampable;
-    
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
