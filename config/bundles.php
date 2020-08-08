@@ -22,4 +22,7 @@ return [
     Bazinga\Bundle\HateoasBundle\BazingaHateoasBundle::class => ['all' => true],
     Nelmio\ApiDocBundle\NelmioApiDocBundle::class => ['all' => true],
     BabDev\PagerfantaBundle\BabDevPagerfantaBundle::class => ['all' => true],
+    Shopping\ApiTKHeaderBundle\ShoppingApiTKHeaderBundle::class => ['all' => true],
+    Shopping\ApiTKCommonBundle\ShoppingApiTKCommonBundle::class => ['all' => true],
+    Shopping\ApiTKUrlBundle\ShoppingApiTKUrlBundle::class => ['all' => true],
 ];

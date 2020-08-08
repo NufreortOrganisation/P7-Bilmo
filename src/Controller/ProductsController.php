@@ -18,6 +18,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Pagerfanta\Pagerfanta;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use Shopping\ApiTKUrlBundle\Annotation as ApiTK;
+use Nelmio\ApiDocBundle\Annotation as Doc;
 
 /**
  * @package App\Controller
@@ -29,12 +31,17 @@ class ProductsController extends AbstractController
      * @Route("/", name="api_products_collection_get", methods={"GET"})
      * @param productsRepository $productsRepository
      * @return JsonResponse
+     *
+     * @Doc\ApiDoc(
+     *     resource=true,
+     *     description="Obtenir la liste de tous les produits."
+     * )
      */
     public function productsCollection(ProductsRepository $productsRepository,
     SerializerInterface $serializer): JsonResponse
     {
         return new JsonResponse(
-            $serializer->serialize($usersRepository->findAll(), "json"),
+            $serializer->serialize($productsRepository->findAll(), "json"),
             JsonResponse::HTTP_OK,
             [],
             true
