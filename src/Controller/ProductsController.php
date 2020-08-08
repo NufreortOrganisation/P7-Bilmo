@@ -46,13 +46,6 @@ class ProductsController extends AbstractController
             [],
             true
           );
-
-      /*  return new JsonResponse(
-            $serializer->serialize($productsRepository->findAll(), "json"),
-            JsonResponse::HTTP_OK,
-            [],
-            true
-          ); */
     }
 
     /**
