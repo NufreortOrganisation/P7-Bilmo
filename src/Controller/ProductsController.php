@@ -32,7 +32,6 @@ class ProductsController extends AbstractController
      * @Route("/", name="api_products_collection_get", methods={"GET"})
      * @param productsRepository $productsRepository
      * @return JsonResponse
-     *
      */
     public function productsCollection(ProductsRepository $productsRepository,
     SerializerInterface $serializer): JsonResponse
@@ -85,7 +84,7 @@ class ProductsController extends AbstractController
         );
     }
 
-/**
+     /**
      * @Route("/{id}", name="api_product_item_put", methods={"PUT"})
      * @param Products $product
      * @param Request $request

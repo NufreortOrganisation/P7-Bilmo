@@ -44,12 +44,12 @@ trait Timestampable
    * @ORM\PrePersist
    * @ORM\PreUpdate
    */
-  public function updateTimestamps()
+  public function updateTimestamps(): void
   {
       if($this->getCreatedAt() === null){
-        $this->setCreatedAt(new \DateTimeImmutable);
+        $this->setCreatedAt(new \DateTimeImmutable());
       }
 
-      $this->setUpdatedAt(new \DateTimeImmutable);
+      $this->setUpdatedAt(new \DateTimeImmutable());
   }
 }

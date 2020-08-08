@@ -1,10 +1,8 @@
 {
+    "name": "P7 - Bilmo API",
+    "description": "P7 - Bilmo API",
     "type": "project",
     "license": "proprietary",
-    "properties": {
-      "name": "P7 - Bilmo API",
-      "Description": "P7 - Bilmo API"
-    },
     "require": {
         "php": "^7.2.5",
         "ext-ctype": "*",

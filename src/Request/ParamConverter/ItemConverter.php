@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class ItemConverter
  * @package App\Request\ParamConverter
  */
-class ItemConverter implements ParamConverterInterface
+abstract class ItemConverter implements ParamConverterInterface
 {
     /**
      * @var EntityManagerInterface
@@ -35,13 +35,13 @@ class ItemConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        if (!$request->attributes->has("id")) {
+        if (!$request->attributes->has('id')) {
             return;
         }
 
         $object = $this->entityManager
             ->getRepository($configuration->getClass())
-            ->find($request->attributes->get("id"))
+            ->find($request->attributes->get('id'))
         ;
 
         $request->attributes->set($configuration->getName(), $object);

@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
  * Class PostConverter
  * @package App\Request\ParamConverter
  */
-class PostConverter implements ParamConverterInterface
+abstract class PostConverter implements ParamConverterInterface
 {
     /**
      * @var SerializerInterface
@@ -39,7 +39,8 @@ class PostConverter implements ParamConverterInterface
             return;
         }
 
-        $object = $this->serializer->deserialize($request->getContent(), $configuration->getClass(), 'json');
+        $object = $this->serializer->deserialize($request->getContent(),
+        $configuration->getClass(), 'json');
 
         $request->attributes->set($configuration->getName(), $object);
     }

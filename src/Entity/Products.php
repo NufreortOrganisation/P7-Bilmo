@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductsRepository;
-use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Traits\Timestampable;
+use Doctrine\ORM\Mapping as ORM;
 use Hateoas\Configuration\Annotation as Hateoas;
 
 /**

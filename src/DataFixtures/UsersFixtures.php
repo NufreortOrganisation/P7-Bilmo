@@ -17,7 +17,7 @@ class UsersFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $fake = Factory::create("fr_FR");
+        $fake = Factory::create('fr_FR');
 
         for($u = 0; $u < 10; $u++) {
             $user = new Users();
@@ -28,8 +28,7 @@ class UsersFixtures extends Fixture
                 ->setPassword($passHash);
 
             $manager->persist($user);
-
-    }
+        }
         // $product = new Product();
         // $manager->persist($product);
 

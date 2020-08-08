@@ -6,17 +6,18 @@ use App\Entity\Users;
 use App\Form\UsersType;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UsersRepository;
+use FOS\RestBundle\Controller\Annotations\Get;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Pagerfanta\Pagerfanta;
+
 
 /**
  * @package App\Controller
@@ -34,7 +35,7 @@ class UsersController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
 
         return new JsonResponse(
-            $serializer->serialize($usersRepository->findAll(), "json"),
+            $serializer->serialize($usersRepository->findAll(), 'json'),
             JsonResponse::HTTP_OK,
             [],
             true
@@ -52,7 +53,7 @@ class UsersController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
 
         return new JsonResponse(
-          $serializer->serialize($user, "json"),
+          $serializer->serialize($user, 'json'),
           JsonResponse::HTTP_OK,
           [],
           true
@@ -76,9 +77,9 @@ class UsersController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(
-          $serializer->serialize($user, "json"),
+          $serializer->serialize($user, 'json'),
           JsonResponse::HTTP_CREATED,
-          ["Location" => $urlGenerator->generate("api_user_get", ["id" => $user->getId()])],
+          ['Location' => $urlGenerator->generate("api_user_get", ['id' => $user->getId()])],
           true
         );
     }
@@ -121,7 +122,7 @@ class UsersController extends AbstractController
         EntityManagerInterface $entityManager
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
-        
+
         $entityManager->remove($user);
         $entityManager->flush();
 
