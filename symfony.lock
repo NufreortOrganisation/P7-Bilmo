@@ -16,6 +16,18 @@
             "./src/Entity/.gitignore"
         ]
     },
+    "babdev/pagerfanta-bundle": {
+        "version": "v2.5.0"
+    },
+    "check24/apitk-common-bundle": {
+        "version": "2.0.1"
+    },
+    "check24/apitk-header-bundle": {
+        "version": "2.0.1"
+    },
+    "check24/apitk-url-bundle": {
+        "version": "2.0.3"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.10.99"
     },
@@ -116,6 +128,9 @@
     "egulias/email-validator": {
         "version": "2.1.18"
     },
+    "exsyst/swagger": {
+        "version": "v0.4.1"
+    },
     "fig/link-util": {
         "version": "1.1.1"
     },
@@ -154,6 +169,12 @@
             "./config/packages/prod/jms_serializer.yaml"
         ]
     },
+    "knplabs/knp-components": {
+        "version": "v2.4.2"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v5.3.0"
+    },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.4"
     },
@@ -178,6 +199,19 @@
     "namshi/jose": {
         "version": "7.2.3"
     },
+    "nelmio/api-doc-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "c8e0c38e1a280ab9e37587a8fa32b251d5bc1c94"
+        },
+        "files": [
+            "./config/packages/nelmio_api_doc.yaml",
+            "./config/routes/nelmio_api_doc.yaml"
+        ]
+    },
     "nelmio/cors-bundle": {
         "version": "1.5",
         "recipe": {
@@ -195,6 +229,9 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.2.3"
+    },
+    "pagerfanta/pagerfanta": {
+        "version": "v2.4.1"
     },
     "php": {
         "version": "7.3"
@@ -622,6 +659,21 @@
     "webmozart/assert": {
         "version": "1.9.1"
     },
+    "willdurand/hateoas": {
+        "version": "3.6.0"
+    },
+    "willdurand/hateoas-bundle": {
+        "version": "2.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.0",
+            "ref": "34df072c6edaa61ae19afb2f3a239f272fecab87"
+        },
+        "files": [
+            "./config/packages/bazinga_hateoas.yaml"
+        ]
+    },
     "willdurand/jsonp-callback-validator": {
         "version": "v1.1.0"
     },
@@ -633,5 +685,8 @@
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.1"
+    },
+    "zircote/swagger-php": {
+        "version": "2.0.16"
     }
 }
