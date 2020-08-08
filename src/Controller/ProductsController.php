@@ -31,17 +31,14 @@ class ProductsController extends AbstractController
      * @return JsonResponse
      */
     public function productsCollection(ProductsRepository $productsRepository,
-    SerializerInterface $serializer,
-    ParamFetcherInterface $paramFetcher): JsonResponse
+    SerializerInterface $serializer): JsonResponse
     {
-        $pager = $productsRepository->findAll()->search(
-            $paramFetcher->get('keyword'),
-            $paramFetcher->get('order'),
-            $paramFetcher->get('limit'),
-            $paramFetcher->get('offset')
-        );
-
-        return $pager->getCurrentPageResults();
+        return new JsonResponse(
+            $serializer->serialize($usersRepository->findAll(), "json"),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+          );
 
       /*  return new JsonResponse(
             $serializer->serialize($productsRepository->findAll(), "json"),
@@ -76,7 +73,7 @@ class ProductsController extends AbstractController
      */
     public function newProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
-      //  $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $product = $serializer->deserialize($request->getContent(), Products::class, 'json');
 
@@ -104,7 +101,7 @@ class ProductsController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $serializer->deserialize(
           $request->getContent(),
@@ -128,7 +125,7 @@ class ProductsController extends AbstractController
         Products $product,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $entityManager->remove($product);
         $entityManager->flush();

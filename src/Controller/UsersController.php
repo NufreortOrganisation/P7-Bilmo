@@ -31,6 +31,8 @@ class UsersController extends AbstractController
      */
     public function usersCollection(UsersRepository $usersRepository, SerializerInterface $serializer): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+
         return new JsonResponse(
             $serializer->serialize($usersRepository->findAll(), "json"),
             JsonResponse::HTTP_OK,
@@ -47,6 +49,8 @@ class UsersController extends AbstractController
      */
     public function showUser(Users $user, SerializerInterface $serializer): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+
         return new JsonResponse(
           $serializer->serialize($user, "json"),
           JsonResponse::HTTP_OK,
@@ -64,6 +68,8 @@ class UsersController extends AbstractController
      */
     public function newUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+
         $user = $serializer->deserialize($request->getContent(), Users::class, 'json');
 
         $entityManager->persist($user);
@@ -90,6 +96,8 @@ class UsersController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer
     ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+
         $serializer->deserialize(
           $request->getContent(),
               Users::class,
@@ -112,6 +120,8 @@ class UsersController extends AbstractController
         Users $user,
         EntityManagerInterface $entityManager
     ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+        
         $entityManager->remove($user);
         $entityManager->flush();
 
