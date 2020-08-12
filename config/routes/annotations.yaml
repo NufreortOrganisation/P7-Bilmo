@@ -7,6 +7,6 @@ kernel:
     resource: ../../src/Kernel.php
     type: annotation
 
-NelmioApiDocBundle:
-    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
-    prefix:   /api/doc
+#NelmioApiDocBundle:
+#    resource: "NelmioApiDocBundle/Resources/config/routing.yml"
+#    prefix:   /api/doc

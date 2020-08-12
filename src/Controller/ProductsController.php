@@ -16,10 +16,15 @@ use Symfony\Component\Serializer\SerializerInterface;
 use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Shopping\ApiTKUrlBundle\Annotation as ApiTK;
 use Nelmio\ApiDocBundle\Annotation as Doc;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Swagger\Annotations as SWG;
+
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @package App\Controller
@@ -31,14 +36,13 @@ class ProductsController extends AbstractController
      * @Route("/", name="api_products_collection_get", methods={"GET"})
      * @param productsRepository $productsRepository
      * @return JsonResponse
-     *
-     * @Doc\ApiDoc(
-     *     resource=true,
-     *     description="Obtenir la liste de tous les produits."
-     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of products")
      */
     public function productsCollection(ProductsRepository $productsRepository,
-    SerializerInterface $serializer): JsonResponse
+    SerializerInterface $serializer,
+    PaginatorInterface $paginator): JsonResponse
     {
         return new JsonResponse(
             $serializer->serialize($productsRepository->findAll(), "json"),
@@ -46,13 +50,6 @@ class ProductsController extends AbstractController
             [],
             true
           );
-
-      /*  return new JsonResponse(
-            $serializer->serialize($productsRepository->findAll(), "json"),
-            JsonResponse::HTTP_OK,
-            [],
-            true
-          ); */
     }
 
     /**

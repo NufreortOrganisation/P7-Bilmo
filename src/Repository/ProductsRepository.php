@@ -19,7 +19,7 @@ class ProductsRepository extends AbstractRepository
         parent::__construct($registry, Products::class);
     }
 
-    public function search($term, $order = 'asc', $limit = 20, $offset = 0)
+    public function search($term, $order = 'asc', $limit = 10, $offset = 0)
     {
         $qb = $this
             ->createQueryBuilder('a')
