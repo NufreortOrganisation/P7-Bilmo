@@ -2,17 +2,19 @@
 fos_rest:
     param_fetcher_listener:  true
     allowed_methods_listener:  true
-    routing_loader: true
+    routing_loader: false
+    body_converter:
+        enabled: true
     view:
         view_response_listener:  true
         formats: { json: true, xml: false, rss: false }
-    body_converter:
-      enabled: true
-    exception:
-        codes:
-            App\Exception\MyException: 403
-        messages:
-            App\Exception\MyException: Forbidden area.
+    serializer:
+        serialize_null: true
+#    exception:
+#        codes:
+#            App\Exception\MyException: 403
+#        messages:
+#            App\Exception\MyException: Forbidden area.
     format_listener:
         rules:
-            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json] }
+            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json ] }

@@ -121,7 +121,7 @@ class UsersController extends AbstractController
         EntityManagerInterface $entityManager
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
-        
+
         $entityManager->remove($user);
         $entityManager->flush();
 

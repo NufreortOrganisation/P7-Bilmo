@@ -12,10 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+//use Symfony\Component\Serializer\SerializerInterface;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use FOS\RestBundle\Request\ParamFetcherInterface;
@@ -23,8 +22,14 @@ use Shopping\ApiTKUrlBundle\Annotation as ApiTK;
 use Nelmio\ApiDocBundle\Annotation as Doc;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Swagger\Annotations as SWG;
-
 use Knp\Component\Pager\PaginatorInterface;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\Post;
+use FOS\RestBundle\Controller\Annotations\Put;
+use FOS\RestBundle\Controller\Annotations\Delete;
+use FOS\RestBundle\Controller\Annotations\View;
+use JMS\Serializer\SerializerInterface;
 
 /**
  * @package App\Controller
@@ -32,28 +37,55 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class ProductsController extends AbstractController
 {
+    private $serializer;
+
+    public function __construct(SerializerInterface $serializer)
+    {
+      $this->serializer = $serializer;
+    }
+
     /**
-     * @Route("/", name="api_products_collection_get", methods={"GET"})
-     * @param productsRepository $productsRepository
-     * @return JsonResponse
+     * @Get(
+     *     path = "/",
+     *     name = "api_products_collection_get",
+     * )
+     * @View
      * @SWG\Response(
      *     response=200,
      *     description="Returns the list of products")
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
      */
     public function productsCollection(ProductsRepository $productsRepository,
     SerializerInterface $serializer,
-    PaginatorInterface $paginator): JsonResponse
+    PaginatorInterface $paginator,
+    Request $request): JsonResponse
     {
+        //$products = $productsRepository->findAll();
+        //$data = $this->serializer->serialize($products, 'json');
+
+      //  $response = new Response($data);
+      //  $response->headers->set('Content-Type', 'application/json');
+
+      //  return $response;
+
+        $products = $productsRepository->findAll();
+        $products = $paginator->paginate($products, $request->get('page', 1), 10);
+
         return new JsonResponse(
-            $serializer->serialize($productsRepository->findAll(), "json"),
+            $serializer->serialize($products, "json"),
             JsonResponse::HTTP_OK,
             [],
             true
           );
     }
 
-    /**
-     * @Route("/{id}", name="api_product_get", methods={"GET"})
+     /**
+     * @Get(
+     *     path = "/{id}",
+     *     name = "api_product_get",
+     *     requirements = {"id"="\d+"}
+     * )
      * @param Products $product
      * @param SerializerInterface $serializer
      * @return JsonResponse
@@ -68,8 +100,12 @@ class ProductsController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/new", name="api_products_collection_post", methods={"POST"})
+     /**
+     * @Post(
+     *     path = "/new",
+     *     name = "api_products_collection_post"
+     * )
+     * @View
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param UrlGeneratorInterface $urlGenerator
@@ -92,8 +128,12 @@ class ProductsController extends AbstractController
         );
     }
 
-/**
-     * @Route("/{id}", name="api_product_item_put", methods={"PUT"})
+     /**
+     * @Put(
+     *     path = "/{id}",
+     *     name = "api_product_item_put",
+     *     requirements = {"id"="\d+"}
+     * )
      * @param Products $product
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -119,8 +159,12 @@ class ProductsController extends AbstractController
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route("/{id}", name="api_product_item_delete", methods={"DELETE"})
+     /**
+     * @Delete(
+     *     path = "/{id}",
+     *     name = "api_product_item_delete",
+     *     requirements = {"id"="\d+"}
+     * )
      * @param Products $product
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
