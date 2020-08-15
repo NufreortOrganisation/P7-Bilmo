@@ -1,5 +1,7 @@
 # P7---Bilmo
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7774c64d001b41a39486d38efa031fbb)](https://app.codacy.com/gh/NufreortOrganisation/P7-Bilmo?utm_source=github.com&utm_medium=referral&utm_content=NufreortOrganisation/P7-Bilmo&utm_campaign=Badge_Grade_Dashboard)
+
 Openclassrooms project - Create an API.
 
 ## Getting Started
