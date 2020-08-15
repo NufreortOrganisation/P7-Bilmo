@@ -25,4 +25,5 @@ return [
     Shopping\ApiTKHeaderBundle\ShoppingApiTKHeaderBundle::class => ['all' => true],
     Shopping\ApiTKCommonBundle\ShoppingApiTKCommonBundle::class => ['all' => true],
     Shopping\ApiTKUrlBundle\ShoppingApiTKUrlBundle::class => ['all' => true],
+    FOS\HttpCacheBundle\FOSHttpCacheBundle::class => ['all' => true],
 ];

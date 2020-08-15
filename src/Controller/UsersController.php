@@ -12,11 +12,27 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-use FOS\RestBundle\Controller\Annotations\Get;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
+use FOS\RestBundle\Request\ParamFetcherInterface;
+use Shopping\ApiTKUrlBundle\Annotation as ApiTK;
+use Nelmio\ApiDocBundle\Annotation as Doc;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Swagger\Annotations as SWG;
+use Knp\Component\Pager\PaginatorInterface;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\Post;
+use FOS\RestBundle\Controller\Annotations\Put;
+use FOS\RestBundle\Controller\Annotations\Delete;
+use FOS\RestBundle\Controller\Annotations\View;
+use JMS\Serializer\SerializerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
+
 
 /**
  * @package App\Controller
@@ -24,33 +40,66 @@ use Pagerfanta\Pagerfanta;
  */
 class UsersController extends AbstractController
 {
-    /**
-     * @Route("/", name="api_users_collection_get", methods={"GET"})
-     * @param usersRepository $usersRepository
-     * @return JsonResponse
-     */
-    public function usersCollection(UsersRepository $usersRepository, SerializerInterface $serializer): JsonResponse
-    {
-        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+    private $serializer;
 
-        return new JsonResponse(
-            $serializer->serialize($usersRepository->findAll(), "json"),
-            JsonResponse::HTTP_OK,
-            [],
-            true
-          );
+    public function __construct(SerializerInterface $serializer)
+    {
+      $this->serializer = $serializer;
     }
 
     /**
-     * @Route("/{id}", name="api_user_get", methods={"GET"})
+     * @Get(
+     *     path = "/",
+     *     name = "api_users_collection_get",
+     * )
+     * @View
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of users")
+     * @param SerializerInterface $serializer
+     * @param CacheInterface $cache
+     * @return JsonResponse
+     */
+    public function usersCollection(UsersRepository $usersRepository,
+    SerializerInterface $serializer,
+    PaginatorInterface $paginator,
+    Request $request,
+    CacheInterface $cache): JsonResponse
+    {
+        $cache = new FilesystemAdapter();
+        $jsonData = $cache->get('jsonData', function(ItemInterface $item) use ($usersRepository, $paginator, $serializer, $request){
+            $item->expiresAt(3);
+
+            $users = $usersRepository->findAll();
+            $users = $paginator->paginate($users, $request->get('page', 1), 10);
+
+            return new JsonResponse(
+                $serializer->serialize($users, "json"),
+                JsonResponse::HTTP_OK,
+                [],
+                true
+              );
+        });
+
+        return $jsonData;
+    }
+
+     /**
+     * @Get(
+     *     path = "/{id}",
+     *     name = "api_user_get",
+     *     requirements = {"id"="\d+"}
+     * )
+     * @View
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns one user of the list")
      * @param Users $user
      * @param SerializerInterface $serializer
      * @return JsonResponse
      */
     public function showUser(Users $user, SerializerInterface $serializer): JsonResponse
     {
-        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
-
         return new JsonResponse(
           $serializer->serialize($user, "json"),
           JsonResponse::HTTP_OK,
@@ -59,8 +108,15 @@ class UsersController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/new", name="api_users_collection_post", methods={"POST"})
+     /**
+     * @Post(
+     *     path = "/new",
+     *     name = "api_users_collection_post"
+     * )
+     * @View
+     * @SWG\Response(
+     *     response=201,
+     *     description="Create a new user")
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param UrlGeneratorInterface $urlGenerator
@@ -68,7 +124,7 @@ class UsersController extends AbstractController
      */
     public function newUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
-        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $user = $serializer->deserialize($request->getContent(), Users::class, 'json');
 
@@ -83,8 +139,16 @@ class UsersController extends AbstractController
         );
     }
 
-/**
-     * @Route("/{id}", name="api_user_item_put", methods={"PUT"})
+     /**
+     * @Put(
+     *     path = "/{id}",
+     *     name = "api_user_item_put",
+     *     requirements = {"id"="\d+"}
+     * )
+     * @View
+     * @SWG\Response(
+     *     response=204,
+     *     description="Edite one user of the list")
      * @param Users $user
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -96,7 +160,7 @@ class UsersController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $serializer->deserialize(
           $request->getContent(),
@@ -110,8 +174,16 @@ class UsersController extends AbstractController
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route("/{id}", name="api_user_item_delete", methods={"DELETE"})
+     /**
+     * @Delete(
+     *     path = "/{id}",
+     *     name = "api_user_item_delete",
+     *     requirements = {"id"="\d+"}
+     * )
+     * @View
+     * @SWG\Response(
+     *     response=204,
+     *     description="Delete one user of the list")
      * @param Users $user
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
@@ -120,7 +192,7 @@ class UsersController extends AbstractController
         Users $user,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_CLIENT', null, 'Seul les CLIENTS peuvent consulter, ajouter, éditer ou supprimer des utilisateurs !');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $entityManager->remove($user);
         $entityManager->flush();

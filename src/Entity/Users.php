@@ -6,10 +6,21 @@ use App\Repository\UsersRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Entity\Traits\Timestampable;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=UsersRepository::class)
  * @ORM\HasLifecycleCallbacks()
+ *
+ * @ORM\Entity(repositoryClass="App\Repository\UsersRepository")
+ *
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_user_get",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      )
+ * )
  */
 class Users implements UserInterface
 {

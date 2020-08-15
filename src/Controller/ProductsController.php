@@ -14,7 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-//use Symfony\Component\Serializer\SerializerInterface;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use FOS\RestBundle\Request\ParamFetcherInterface;
@@ -30,6 +29,10 @@ use FOS\RestBundle\Controller\Annotations\Put;
 use FOS\RestBundle\Controller\Annotations\Delete;
 use FOS\RestBundle\Controller\Annotations\View;
 use JMS\Serializer\SerializerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
+
 
 /**
  * @package App\Controller
@@ -54,30 +57,33 @@ class ProductsController extends AbstractController
      *     response=200,
      *     description="Returns the list of products")
      * @param SerializerInterface $serializer
+     * @param CacheInterface $cache
      * @return JsonResponse
      */
     public function productsCollection(ProductsRepository $productsRepository,
     SerializerInterface $serializer,
     PaginatorInterface $paginator,
-    Request $request): JsonResponse
+    Request $request,
+    CacheInterface $cache): JsonResponse
     {
-        //$products = $productsRepository->findAll();
-        //$data = $this->serializer->serialize($products, 'json');
+      
+        $cache = new FilesystemAdapter();
 
-      //  $response = new Response($data);
-      //  $response->headers->set('Content-Type', 'application/json');
+        $jsonData = $cache->get('jsonData', function(ItemInterface $item) use ($productsRepository, $paginator, $serializer, $request){
+            $item->expiresAt(3);
 
-      //  return $response;
+            $products = $productsRepository->findAll();
+            $products = $paginator->paginate($products, $request->get('page', 1), 10);
 
-        $products = $productsRepository->findAll();
-        $products = $paginator->paginate($products, $request->get('page', 1), 10);
+            return new JsonResponse(
+                $serializer->serialize($products, "json"),
+                JsonResponse::HTTP_OK,
+                [],
+                true
+              );
+        });
 
-        return new JsonResponse(
-            $serializer->serialize($products, "json"),
-            JsonResponse::HTTP_OK,
-            [],
-            true
-          );
+        return $jsonData;
     }
 
      /**
@@ -86,18 +92,23 @@ class ProductsController extends AbstractController
      *     name = "api_product_get",
      *     requirements = {"id"="\d+"}
      * )
+     * @View
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns one product of the list")
      * @param Products $product
      * @param SerializerInterface $serializer
      * @return JsonResponse
      */
     public function showProduct(Products $product, SerializerInterface $serializer): JsonResponse
     {
-        return new JsonResponse(
-          $serializer->serialize($product, "json"),
-          JsonResponse::HTTP_OK,
-          [],
-          true
-        );
+            return new JsonResponse(
+              $serializer->serialize($product, "json"),
+              JsonResponse::HTTP_OK,
+              [],
+              true
+            );
+
     }
 
      /**
@@ -106,6 +117,9 @@ class ProductsController extends AbstractController
      *     name = "api_products_collection_post"
      * )
      * @View
+     * @SWG\Response(
+     *     response=201,
+     *     description="Create a new product")
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param UrlGeneratorInterface $urlGenerator
@@ -134,6 +148,10 @@ class ProductsController extends AbstractController
      *     name = "api_product_item_put",
      *     requirements = {"id"="\d+"}
      * )
+     * @View
+     * @SWG\Response(
+     *     response=204,
+     *     description="Edite one product of the list")
      * @param Products $product
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -150,9 +168,9 @@ class ProductsController extends AbstractController
         $serializer->deserialize(
           $request->getContent(),
               Products::class,
-              'json',
-              [AbstractNormalizer::OBJECT_TO_POPULATE => $product]
+              'json'
           );
+
 
         $entityManager->flush();
 
@@ -165,6 +183,10 @@ class ProductsController extends AbstractController
      *     name = "api_product_item_delete",
      *     requirements = {"id"="\d+"}
      * )
+     * @View
+     * @SWG\Response(
+     *     response=204,
+     *     description="Delete one product of the list")
      * @param Products $product
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
