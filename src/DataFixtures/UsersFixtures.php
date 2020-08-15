@@ -22,7 +22,7 @@ class UsersFixtures extends Fixture
         for($u = 0; $u < 10; $u++) {
             $user = new Users();
 
-            $passHash = $this->encoder->encodePassword($user, $plainPassword = 'password');
+            $passHash = $this->encoder->encodePassword($user, 'password');
 
             $user->setEmail($fake->email)
                 ->setPassword($passHash);

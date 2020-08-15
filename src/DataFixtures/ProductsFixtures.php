@@ -17,9 +17,9 @@ class ProductsFixtures extends Fixture
             $product = new Products();
 
             $product->setName($fake->lastName)
-                ->setPrice($fake->randomFloat($nbMaxDecimals = 2, $min = 0, $max = 2000))
+                ->setPrice($fake->randomFloat(2, 0, 2000))
                 ->setCategory($fake->colorName)
-                ->setPicture($fake->imageUrl($width = 640, $height = 480));
+                ->setPicture($fake->imageUrl(640, 480));
 
             $manager->persist($product);
         }
