@@ -158,7 +158,6 @@ class ProductsController extends AbstractController
      * @param SerializerInterface $serializer
      */
     public function editProduct(
-        Products $product,
         Request $request,
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer

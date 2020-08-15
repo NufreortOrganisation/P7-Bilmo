@@ -21,20 +21,20 @@ class ProductsRepository extends AbstractRepository
 
     public function search($term, $order = 'asc', $limit = 10, $offset = 0)
     {
-        $qb = $this
+        $query = $this
             ->createQueryBuilder('a')
             ->select('a')
             ->orderBy('a.title', $order)
         ;
 
         if ($term) {
-            $qb
+            $query
                 ->where('a.title LIKE ?1')
                 ->setParameter(1, '%'.$term.'%')
             ;
         }
 
-        return $this->paginate($qb, $limit, $offset);
+        return $this->paginate($query, $limit, $offset);
     }
     // /**
     //  * @return Products[] Returns an array of Products objects
