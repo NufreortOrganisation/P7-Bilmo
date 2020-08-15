@@ -17,20 +17,17 @@ To run this project in local you need a local web server as a wampserver for Win
 
 3 - Clone the repository on your computer.
 
-4 - Finally, you can operate requests on the API by using Postman (https://www.postman.com/).
+4 - Finally, you can operate requests on the API by using Postman (<https://www.postman.com/>).
 
 ### Coding style tests and analysis
 
 Tests done with :
-- PHPUnit (https://phpunit.de/)
-- PHP Insights (https://phpinsights.com/)
-- Symfony Insights (https://insight.symfony.com/)
-- BlackFire (https://blackfire.io/)
+- Codacy - (<https://www.codacy.com>)
 
 
 ## Built With
 
-* [Symfony - v5.1](https://symfony.com/) - PHP framework
+* [Symfony - v5.1](<https://symfony.com/>) - PHP framework
 
 ## Authors
 
