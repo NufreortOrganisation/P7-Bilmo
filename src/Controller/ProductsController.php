@@ -14,10 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\Pagerfanta;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use Shopping\ApiTKUrlBundle\Annotation as ApiTK;
 use Nelmio\ApiDocBundle\Annotation as Doc;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Swagger\Annotations as SWG;
@@ -32,7 +29,6 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
-
 
 /**
  * @package App\Controller
@@ -66,7 +62,6 @@ class ProductsController extends AbstractController
     Request $request,
     CacheInterface $cache): JsonResponse
     {
-
         $cache = new FilesystemAdapter();
 
         $jsonData = $cache->get('productsList', function(ItemInterface $item) use ($productsRepository, $paginator, $serializer, $request){
@@ -108,7 +103,6 @@ class ProductsController extends AbstractController
               [],
               true
             );
-
     }
 
      /**
@@ -125,9 +119,13 @@ class ProductsController extends AbstractController
      * @param UrlGeneratorInterface $urlGenerator
      * @return JsonResponse
      */
-    public function newProduct(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
+    public function newProduct(Request $request,
+    SerializerInterface $serializer,
+    EntityManagerInterface $entityManager,
+    UrlGeneratorInterface $urlGenerator
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null,
+        'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $product = $serializer->deserialize($request->getContent(), Products::class, 'json');
 
@@ -162,14 +160,14 @@ class ProductsController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null,
+        'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $serializer->deserialize(
           $request->getContent(),
               Products::class,
               'json'
           );
-
 
         $entityManager->flush();
 
@@ -194,7 +192,8 @@ class ProductsController extends AbstractController
         Products $product,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null,
+        'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $entityManager->remove($product);
         $entityManager->flush();

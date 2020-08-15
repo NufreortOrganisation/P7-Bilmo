@@ -14,10 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\Pagerfanta;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use Shopping\ApiTKUrlBundle\Annotation as ApiTK;
 use Nelmio\ApiDocBundle\Annotation as Doc;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Swagger\Annotations as SWG;
@@ -32,7 +29,6 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
-
 
 /**
  * @package App\Controller
@@ -66,6 +62,9 @@ class UsersController extends AbstractController
     Request $request,
     CacheInterface $cache): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null,
+        'Seul les clients peuvent consulter ajouter, éditer ou supprimer des utilisateurs !');
+
         $cache = new FilesystemAdapter();
         $jsonData = $cache->get('usersList', function(ItemInterface $item) use ($usersRepository, $paginator, $serializer, $request){
             $item->expiresAfter(10);
@@ -100,6 +99,9 @@ class UsersController extends AbstractController
      */
     public function showUser(Users $user, SerializerInterface $serializer): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null,
+        'Seul les clients peuvent consulter ajouter, éditer ou supprimer des utilisateurs !');
+
         return new JsonResponse(
           $serializer->serialize($user, "json"),
           JsonResponse::HTTP_OK,
@@ -122,9 +124,13 @@ class UsersController extends AbstractController
      * @param UrlGeneratorInterface $urlGenerator
      * @return JsonResponse
      */
-    public function newUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator): JsonResponse
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
+    public function newUser(Request $request,
+     SerializerInterface $serializer,
+      EntityManagerInterface $entityManager,
+       UrlGeneratorInterface $urlGenerator
+       ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null,
+        'Seul les clients peuvent consulter ajouter, éditer ou supprimer des utilisateurs !');
 
         $user = $serializer->deserialize($request->getContent(), Users::class, 'json');
 
@@ -160,7 +166,8 @@ class UsersController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null,
+        'Seul les clients peuvent consulter ajouter, éditer ou supprimer des utilisateurs !');
 
         $serializer->deserialize(
           $request->getContent(),
@@ -192,7 +199,8 @@ class UsersController extends AbstractController
         Users $user,
         EntityManagerInterface $entityManager
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
+        $this->denyAccessUnlessGranted('ROLE_CLIENT', null,
+        'Seul les clients peuvent consulter ajouter, éditer ou supprimer des utilisateurs !');
 
         $entityManager->remove($user);
         $entityManager->flush();
