@@ -8,7 +8,6 @@ Openclassrooms project - Create an API.
 
 To run this project in local you need a local web server as a wampserver for Windows (Apache, PHP, MySQL).
 
-
 ### Installing
 
 1 - You need to install Symfony on your computer. To do it you can use composer.
@@ -22,17 +21,16 @@ To run this project in local you need a local web server as a wampserver for Win
 ### Coding style tests and analysis
 
 Tests done with :
-- Codacy - (<https://www.codacy.com>)
-
+    Codacy - (<https://www.codacy.com>)
 
 ## Built With
 
-* [Symfony - v5.1](<https://symfony.com/>) - PHP framework
+    [Symfony - v5.1] - (<https://symfony.com/>) - PHP framework
 
 ## Authors
 
-* Made by Nufreort.
+    Made by - Nufreort
 
 ## Acknowledgments
 
-* Mentor : Dadouda.
+    Mentor - Dadouda
