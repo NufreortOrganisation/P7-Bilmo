@@ -67,8 +67,8 @@ class UsersController extends AbstractController
     CacheInterface $cache): JsonResponse
     {
         $cache = new FilesystemAdapter();
-        $jsonData = $cache->get('jsonData', function(ItemInterface $item) use ($usersRepository, $paginator, $serializer, $request){
-            $item->expiresAt(3);
+        $jsonData = $cache->get('usersList', function(ItemInterface $item) use ($usersRepository, $paginator, $serializer, $request){
+            $item->expiresAfter(10);
 
             $users = $usersRepository->findAll();
             $users = $paginator->paginate($users, $request->get('page', 1), 10);

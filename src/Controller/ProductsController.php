@@ -66,11 +66,11 @@ class ProductsController extends AbstractController
     Request $request,
     CacheInterface $cache): JsonResponse
     {
-      
+
         $cache = new FilesystemAdapter();
 
-        $jsonData = $cache->get('jsonData', function(ItemInterface $item) use ($productsRepository, $paginator, $serializer, $request){
-            $item->expiresAt(3);
+        $jsonData = $cache->get('productsList', function(ItemInterface $item) use ($productsRepository, $paginator, $serializer, $request){
+            $item->expiresAfter(10);
 
             $products = $productsRepository->findAll();
             $products = $paginator->paginate($products, $request->get('page', 1), 10);
