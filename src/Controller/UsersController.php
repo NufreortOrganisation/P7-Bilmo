@@ -154,7 +154,7 @@ class UsersController extends AbstractController
      * @View
      * @SWG\Response(
      *     response=204,
-     *     description="Edite one user of the list")
+     *     description="Edit one user of the list")
      * @param Users $user
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -164,21 +164,27 @@ class UsersController extends AbstractController
         Users $user,
         Request $request,
         EntityManagerInterface $entityManager,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        UrlGeneratorInterface $urlGenerator
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_CLIENT', null,
         'Seul les clients peuvent consulter ajouter, éditer ou supprimer des utilisateurs !');
 
         $serializer->deserialize(
-          $request->getContent(),
-              Users::class,
-              'json',
-              [AbstractNormalizer::OBJECT_TO_POPULATE => $user]
+            $request->getContent(),
+            Users::class,
+            'json'
           );
 
+        $entityManager->persist($user);
         $entityManager->flush();
 
-        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        return new JsonResponse(
+          $serializer->serialize($user, "json"),
+          JsonResponse::HTTP_CREATED,
+          ["Location" => $urlGenerator->generate("api_user_get", ["id" => $user->getId()])],
+          true
+        );
     }
 
      /**
