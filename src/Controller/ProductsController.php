@@ -107,7 +107,7 @@ class ProductsController extends AbstractController
 
      /**
      * @Post(
-     *     path = "/new",
+     *     path = "/",
      *     name = "api_products_collection_post"
      * )
      * @View
@@ -149,29 +149,37 @@ class ProductsController extends AbstractController
      * @View
      * @SWG\Response(
      *     response=204,
-     *     description="Edite one product of the list")
+     *     description="Edit one product of the list")
      * @param Products $product
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param SerializerInterface $serializer
      */
     public function editProduct(
+        Products $product,
         Request $request,
         EntityManagerInterface $entityManager,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        UrlGeneratorInterface $urlGenerator
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null,
         'Seul les admins peuvent ajouter, éditer ou supprimer des produits !');
 
         $serializer->deserialize(
-          $request->getContent(),
-              Products::class,
-              'json'
+            $request->getContent(),
+            Products::class,
+            'json'
           );
 
+        $entityManager->persist($product);
         $entityManager->flush();
 
-        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        return new JsonResponse(
+          $serializer->serialize($product, "json"),
+          JsonResponse::HTTP_CREATED,
+          ["Location" => $urlGenerator->generate("api_product_get", ["id" => $product->getId()])],
+          true
+        );
     }
 
      /**
